@@ -13,7 +13,6 @@
 module load bioinfo-tools
 module load quast/5.0.2
 
-PREPROCESSING_DIR="/home/ouyghe/genome_analysis/Genome-Analysis-project_4/"
 python /sw/bioinfo/quast/5.0.2/snowy/bin/quast.py \
--o pilon_quast $PREPROCESSING_DIR/DNA_assembly/assembly.fasta \
+-o modified_quast /home/ouyghe/genome_analysis/Genome-Analysis-project_4/DNA_assembly/modified_flye/assembly.fasta \
 --eukaryote --k-mer-stats --gene-finding --conserved-genes-finding
