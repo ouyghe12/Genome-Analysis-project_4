@@ -78,6 +78,28 @@ log_counts <- log2(counts_filtered + 1)
 dds_norm <- assay(rlog(dds, blind=FALSE))
 pheatmap(dds_norm[top30_genes$gene, ], cluster_rows=TRUE, cluster_cols=TRUE, show_rownames=TRUE, show_colnames=TRUE)
 
+upregulated_genes <- significant_genes[significant_genes$log2FoldChange > 0, ]
+upregulated_genes_list <- list()
+upregulated_genes_list[["up_comp"]] <- upregulated_genes
+
+downregulated_genes <- significant_genes[significant_genes$log2FoldChange < 0, ]
+downregulated_genes_list <- list()
+downregulated_genes_list[["down_comp"]] <- downregulated_genes
+
+write.table(upregulated_genes, 
+            file="upregulated_genes.csv", 
+            sep=",",  
+            quote=FALSE, 
+            row.names=FALSE, 
+            col.names=TRUE) 
+
+write.table(downregulated_genes, 
+            file="downregulated_genes.csv", 
+            sep=",", 
+            quote=FALSE, 
+            row.names=FALSE, 
+            col.names=TRUE)
+
 rld <- rlog(dds, blind=FALSE)
 pca_data <- prcomp(t(assay(rld)))
 pca_df <- data.frame(PC1 = pca_data$x[, 1], PC2 = pca_data$x[, 2], condition = sample_info$condition)
