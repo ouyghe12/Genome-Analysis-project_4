@@ -86,5 +86,5 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-cp -r /scratch/9427691/oooo/trinity_out.Trinity.fasta /home/ouyghe/genome_analysis/Genome-Analysis-project_4/RNA_Trinity
+cp -r trinity_out /proj/uppmax2024-2-7/nobackup/work/ouyghe_work
 
