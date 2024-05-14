@@ -116,29 +116,42 @@ for (comp_name in names(results_list)) {
   significant_res <- res[!is.na(res$padj) & res$padj < 0.05, ]
   filtered_results_list[[comp_name]] <- significant_res
 }
-print(filtered_results_list[["LEAF_vs_ROOT"]])
 for (comp_name in names(filtered_results_list)) {
   write.csv(filtered_results_list[[comp_name]], paste0(comp_name, "_filtered.csv"))
 }
 
 upregulated_genes_list <- list()
 downregulated_genes_list <- list()
+result_counts <- data.frame(Comparison = character(), Upregulated = integer(), Downregulated = integer(), stringsAsFactors = FALSE)
 for (comp_name in names(filtered_results_list)) {
   upregulated_genes <- filtered_results_list[[comp_name]][filtered_results_list[[comp_name]]$log2FoldChange > 0, ]
   upregulated_genes_list[[comp_name]] <- upregulated_genes
   downregulated_genes <- filtered_results_list[[comp_name]][filtered_results_list[[comp_name]]$log2FoldChange < 0, ]
   downregulated_genes_list[[comp_name]] <- downregulated_genes
+  up_count <- nrow(upregulated_genes)
+  down_count <- nrow(downregulated_genes)
+  result_counts <- rbind(result_counts, data.frame(Comparison = comp_name, Upregulated = up_count, Downregulated = down_count, stringsAsFactors = FALSE))
 }
-print(upregulated_genes_list[["LEAF_vs_ROOT"]])
-print(downregulated_genes_list[["LEAF_vs_ROOT"]])
+write.csv(result_counts, "gene_regulation_counts.csv", row.names = FALSE)
 
-plotMA(results_list[["LEAF_vs_ROOT"]], main="MA Plot: LEAF vs ROOT", ylim=c(-5,5))
+for (comp_name in names(comparisons)) {
+  res <- results(dds, contrast=comparisons[[comp_name]])
+  results_list[[comp_name]] <- res
+  
+  png(paste0(comp_name, "_MA_plot.png"))
+  plotMA(res, main=paste("MA Plot:", comp_name), ylim=c(-5,5))
+  dev.off()
+  
+  res$padj <- p.adjust(res$pvalue, method = "BH")
+  
 
-res <- results_list[["LEAF_vs_ROOT"]]
-res$padj <- p.adjust(res$pvalue, method = "BH")  
-ggplot(res, aes(x = log2FoldChange, y = -log10(pvalue), color = padj < 0.05)) +
-  geom_point(alpha = 0.5) +
-  scale_color_manual(values = c("grey", "red"), labels = c("Not significant", "Significant")) +
-  labs(title = "Volcano Plot: MK_vs_M_ARIL2", x = "Log2 Fold Change", y = "-Log10 P-value") +
-  theme_minimal()
+  p <- ggplot(res, aes(x = log2FoldChange, y = -log10(pvalue), color = padj < 0.05)) +
+    geom_point(alpha = 0.5) +
+    scale_color_manual(values = c("grey", "red"), labels = c("Not significant", "Significant")) +
+    labs(title = paste("Volcano Plot:", comp_name), x = "Log2 Fold Change", y = "-Log10 P-value") +
+    theme_minimal()
+  
+  ggsave(paste0(comp_name, "_volcano_plot.png"), plot = p)
+}
+
 
