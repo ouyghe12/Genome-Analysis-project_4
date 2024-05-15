@@ -15,4 +15,5 @@ module load bioinfo-tools
 module load trinity/2.14.0
 module load jellyfish/2.3.0
 
-/sw/bioinfo/trinity/2.14.0/rackham/util/TrinityStats.pl ./trinity_out.Trinity.fasta > Stat.txt
+/sw/bioinfo/trinity/2.14.0/rackham/util/support_scripts/filter_transcripts_require_min_cov.pl ./Trinity.tmp.fasta ./both.fa ./salmon_outdir/quant.sf 2 > ./trinity_out.Trinity.fasta
+/sw/bioinfo/trinity/2.14.0/rackham/util/support_scripts/get_Trinity_gene_to_trans_map.pl ./trinity_out.Trinity.fasta > ./trinity_out.Trinity.fasta.gene_trans_map
